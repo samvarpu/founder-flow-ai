@@ -59,7 +59,7 @@ const Navbar = ({ onLoginClick, onSignupClick }: NavbarProps) => {
             className="ml-4"
             onClick={onLoginClick}
           >
-            Login
+            Sign In
           </Button>
           <Button 
             size="sm" 
@@ -123,7 +123,7 @@ const Navbar = ({ onLoginClick, onSignupClick }: NavbarProps) => {
                   onLoginClick?.();
                 }}
               >
-                Login
+                Sign In
               </Button>
               <Button 
                 className="w-full"
