@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
@@ -8,9 +7,11 @@ import FeatureCard from "../components/landing/FeatureCard";
 import { Motion } from "../components/ui/motion";
 import Navbar from "../components/landing/Navbar";
 import Testimonial from "../components/landing/Testimonial";
+import { AuthDialog } from "../components/auth/AuthDialog";
 
 const Index = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [activeAuthTab, setActiveAuthTab] = useState<"login" | "signup">("signup");
 
   const features = [
     {
@@ -30,13 +31,14 @@ const Index = () => {
     }
   ];
 
-  const handleGoogleSignIn = () => {
-    setIsLoading(true);
-    // This would normally connect to Firebase
-    setTimeout(() => {
-      setIsLoading(false);
-      window.location.href = "/app";
-    }, 1500);
+  const openSignupDialog = () => {
+    setActiveAuthTab("signup");
+    setAuthDialogOpen(true);
+  };
+
+  const openLoginDialog = () => {
+    setActiveAuthTab("login");
+    setAuthDialogOpen(true);
   };
 
   return (
@@ -48,8 +50,8 @@ const Index = () => {
         <div className="blob w-[300px] h-[300px] bottom-1/4 left-1/4 animate-blob-move animation-delay-4000 opacity-20"></div>
       </div>
       
-      {/* Navbar */}
-      <Navbar />
+      {/* Navbar with auth buttons */}
+      <Navbar onLoginClick={openLoginDialog} onSignupClick={openSignupDialog} />
       
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center px-4 pt-20 pb-32 md:pt-32 md:pb-40 text-center">
@@ -95,23 +97,21 @@ const Index = () => {
         >
           <Button 
             size="lg" 
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
+            onClick={openSignupDialog}
             className="text-lg px-8 h-14 space-x-2 bg-primary hover:bg-primary/90"
           >
             <span>Get Started Free</span>
             <ArrowRight className="w-5 h-5" />
           </Button>
           
-          <Link to="/app">
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="text-lg px-8 h-14 border-2"
-            >
-              See Demo
-            </Button>
-          </Link>
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="text-lg px-8 h-14 border-2"
+            onClick={openLoginDialog}
+          >
+            Login
+          </Button>
         </Motion>
         
         <Motion
@@ -123,6 +123,13 @@ const Index = () => {
           No credit card required · No pricing · Just start for free
         </Motion>
       </section>
+      
+      {/* Auth Dialog */}
+      <AuthDialog 
+        open={authDialogOpen} 
+        onOpenChange={setAuthDialogOpen} 
+        defaultTab={activeAuthTab} 
+      />
       
       {/* Hero Image */}
       <Motion
@@ -228,8 +235,7 @@ const Index = () => {
             
             <Button 
               size="lg" 
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
+              onClick={openSignupDialog}
               className="text-lg px-8 h-14"
             >
               Start Building Now

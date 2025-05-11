@@ -4,7 +4,12 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Menu, X } from 'lucide-react';
 
-const Navbar = () => {
+interface NavbarProps {
+  onLoginClick?: () => void;
+  onSignupClick?: () => void;
+}
+
+const Navbar = ({ onLoginClick, onSignupClick }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -48,17 +53,22 @@ const Navbar = () => {
           <Link to="#blog" className="text-sm text-muted-foreground hover:text-foreground font-medium transition-colors">
             Blog
           </Link>
-          <Link to="/app">
-            <Button variant="outline" size="sm" className="ml-4">
-              Login
-            </Button>
-          </Link>
-          <Link to="/app">
-            <Button size="sm" className="ml-2 flex items-center space-x-1">
-              <span>Get Started</span>
-              <ArrowRight size={14} />
-            </Button>
-          </Link>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="ml-4"
+            onClick={onLoginClick}
+          >
+            Login
+          </Button>
+          <Button 
+            size="sm" 
+            className="ml-2 flex items-center space-x-1"
+            onClick={onSignupClick}
+          >
+            <span>Get Started</span>
+            <ArrowRight size={14} />
+          </Button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -105,16 +115,25 @@ const Navbar = () => {
               Blog
             </Link>
             <div className="pt-2 flex flex-col gap-2">
-              <Link to="/app" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full">
-                  Login
-                </Button>
-              </Link>
-              <Link to="/app" onClick={() => setMobileMenuOpen(false)}>
-                <Button className="w-full">
-                  Get Started
-                </Button>
-              </Link>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onLoginClick?.();
+                }}
+              >
+                Login
+              </Button>
+              <Button 
+                className="w-full"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onSignupClick?.();
+                }}
+              >
+                Get Started
+              </Button>
             </div>
           </nav>
         </div>
