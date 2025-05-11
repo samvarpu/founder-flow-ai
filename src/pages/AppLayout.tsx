@@ -4,7 +4,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   BrainCircuit, 
-  FilePresentation, 
+  Presentation, 
   LightbulbIcon, 
   LogOut, 
   MenuIcon, 
@@ -26,7 +26,7 @@ const AppLayout = () => {
     { 
       name: "Pitch Deck", 
       href: "/app/pitch-deck", 
-      icon: FilePresentation, 
+      icon: Presentation, 
       current: location.pathname === "/app/pitch-deck" 
     },
     { 
