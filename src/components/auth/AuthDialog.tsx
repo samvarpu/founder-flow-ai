@@ -3,8 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AuthDialogProps {
   open: boolean;
@@ -14,22 +13,11 @@ interface AuthDialogProps {
 
 export function AuthDialog({ open, onOpenChange, defaultTab = "signup" }: AuthDialogProps) {
   const [tab, setTab] = useState<"login" | "signup">(defaultTab);
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const { signInWithGoogle } = useAuth();
 
   const handleGoogleAuth = () => {
-    // This would normally connect to Google authentication service
-    console.log("Google authentication initiated");
-    toast({
-      title: tab === "login" ? "Welcome back!" : "Account created!",
-      description: tab === "login" ? "You have successfully logged in." : "Your account has been successfully created.",
-    });
-    
-    // Simulate auth success and redirect
-    setTimeout(() => {
-      onOpenChange(false);
-      navigate("/app");
-    }, 1000);
+    signInWithGoogle();
+    onOpenChange(false);
   };
 
   return (
@@ -45,13 +33,13 @@ export function AuthDialog({ open, onOpenChange, defaultTab = "signup" }: AuthDi
           <TabsList className="grid grid-cols-2 w-full rounded-none border-b h-14">
             <TabsTrigger 
               value="signup" 
-              className="data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full"
+              className="text-base font-medium data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full"
             >
               Sign Up
             </TabsTrigger>
             <TabsTrigger 
               value="login" 
-              className="data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full"
+              className="text-base font-medium data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full"
             >
               Login
             </TabsTrigger>

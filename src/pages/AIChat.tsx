@@ -2,16 +2,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
-  ArrowRight, 
   BrainCircuit, 
   Send, 
   UserCircle, 
   Zap,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 interface Message {
   role: "user" | "ai";
@@ -21,7 +18,6 @@ interface Message {
 
 const AIChat = () => {
   const [message, setMessage] = useState("");
-  const [context, setContext] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "ai",
@@ -79,18 +75,6 @@ const AIChat = () => {
     }, 1500);
   };
   
-  const handleSuggestedPrompt = (prompt: string) => {
-    setMessage(prompt);
-  };
-  
-  const suggestedPrompts = [
-    "Give me 3 ways to monetize this",
-    "What's a good brand name for this?",
-    "What would YC ask me about this idea?",
-    "What are the biggest risks for this startup?",
-    "How should I approach the MVP?"
-  ];
-  
   const formatMessage = (content: string) => {
     // Simple markdown-like formatting
     return content
@@ -115,137 +99,88 @@ const AIChat = () => {
         </p>
       </div>
       
-      <div className="grid md:grid-cols-4 gap-6">
-        {/* Context Panel */}
-        <div className="md:col-span-1">
-          <Card className="glass-card border-0 sticky top-8">
-            <CardContent className="pt-6 space-y-4">
-              <h3 className="text-lg font-medium mb-2">What are you working on?</h3>
+      {/* Chat Area */}
+      <div className="flex flex-col h-[calc(100vh-240px)]">
+        <Card className="glass-card border-0 flex-1 flex flex-col overflow-hidden">
+          <CardContent className="pt-6 flex-1 overflow-y-auto pr-2">
+            <div className="space-y-6">
+              {messages.map((msg, index) => (
+                <div 
+                  key={index} 
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div 
+                    className={`max-w-3/4 rounded-2xl p-4 ${
+                      msg.role === "user" 
+                        ? "bg-primary text-primary-foreground ml-12" 
+                        : "bg-secondary mr-12"
+                    }`}
+                  >
+                    <div className="flex items-center mb-2 gap-2">
+                      {msg.role === "ai" ? (
+                        <>
+                          <BrainCircuit className="w-5 h-5" />
+                          <span className="font-medium">AI Co-founder</span>
+                        </>
+                      ) : (
+                        <>
+                          <UserCircle className="w-5 h-5" />
+                          <span className="font-medium">You</span>
+                        </>
+                      )}
+                    </div>
+                    <div>{formatMessage(msg.content)}</div>
+                  </div>
+                </div>
+              ))}
               
-              <Textarea
-                placeholder="Describe your startup idea to give context to your AI co-founder..."
-                value={context}
-                onChange={(e) => setContext(e.target.value)}
-                className="glass-input min-h-24"
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-secondary rounded-2xl p-4 max-w-3/4 mr-12">
+                    <div className="flex items-center mb-2">
+                      <BrainCircuit className="w-5 h-5 mr-2" />
+                      <span className="font-medium">AI Co-founder</span>
+                    </div>
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                      <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+          </CardContent>
+          
+          <div className="p-4 border-t">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Ask a question..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                className="glass-input"
               />
               
-              <Button className="w-full gap-2">
-                <BrainCircuit className="w-4 h-4" />
-                Set Context
+              <Button 
+                onClick={handleSendMessage} 
+                disabled={!message.trim() || isTyping}
+                className="shrink-0"
+              >
+                <Send className="w-4 h-4" />
               </Button>
-              
-              <div className="pt-4">
-                <h4 className="text-sm font-medium mb-3">Suggested Prompts</h4>
-                <div className="space-y-2">
-                  {suggestedPrompts.map((prompt) => (
-                    <Button
-                      key={prompt}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleSuggestedPrompt(prompt)}
-                      className="text-xs w-full justify-start h-auto py-2 px-3"
-                    >
-                      {prompt}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="text-center pt-4">
-                <Link to="/app/validate">
-                  <Button variant="ghost" size="sm" className="text-xs gap-1">
-                    Get ideas from validation
-                    <ArrowRight className="w-3 h-3" />
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Chat Area */}
-        <div className="md:col-span-3 flex flex-col h-[calc(100vh-240px)]">
-          <Card className="glass-card border-0 flex-1 flex flex-col overflow-hidden">
-            <CardContent className="pt-6 flex-1 overflow-y-auto pr-2">
-              <div className="space-y-6">
-                {messages.map((msg, index) => (
-                  <div 
-                    key={index} 
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div 
-                      className={`max-w-3/4 rounded-2xl p-4 ${
-                        msg.role === "user" 
-                          ? "bg-primary text-primary-foreground ml-12" 
-                          : "bg-secondary mr-12"
-                      }`}
-                    >
-                      <div className="flex items-center mb-2 gap-2">
-                        {msg.role === "ai" ? (
-                          <>
-                            <BrainCircuit className="w-5 h-5" />
-                            <span className="font-medium">AI Co-founder</span>
-                          </>
-                        ) : (
-                          <>
-                            <UserCircle className="w-5 h-5" />
-                            <span className="font-medium">You</span>
-                          </>
-                        )}
-                      </div>
-                      <div>{formatMessage(msg.content)}</div>
-                    </div>
-                  </div>
-                ))}
-                
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="bg-secondary rounded-2xl p-4 max-w-3/4 mr-12">
-                      <div className="flex items-center mb-2">
-                        <BrainCircuit className="w-5 h-5 mr-2" />
-                        <span className="font-medium">AI Co-founder</span>
-                      </div>
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                        <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <div ref={messagesEndRef} />
-              </div>
-            </CardContent>
-            
-            <div className="p-4 border-t">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Ask a question..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                  className="glass-input"
-                />
-                
-                <Button 
-                  onClick={handleSendMessage} 
-                  disabled={!message.trim() || isTyping}
-                  className="shrink-0"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              <div className="flex justify-center mt-3">
-                <Button variant="ghost" size="sm" className="text-xs gap-1 text-muted-foreground">
-                  <Zap className="w-3 h-3" />
-                  Powered by Gemini
-                </Button>
-              </div>
             </div>
-          </Card>
-        </div>
+            
+            <div className="flex justify-center mt-3">
+              <Button variant="ghost" size="sm" className="text-xs gap-1 text-muted-foreground">
+                <Zap className="w-3 h-3" />
+                Powered by Gemini
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   );

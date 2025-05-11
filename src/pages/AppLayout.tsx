@@ -1,6 +1,6 @@
 
-import { ReactNode, useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link, Outlet, useLocation, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   BrainCircuit, 
@@ -8,32 +8,27 @@ import {
   LightbulbIcon, 
   LogOut, 
   MenuIcon, 
-  User, 
   X,
   Search,
   Bell,
-  Settings,
   HelpCircle,
   Layout,
-  ChevronDown
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuth } from "@/contexts/AuthContext";
 
 const AppLayout = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { currentUser, loading, logout } = useAuth();
+
+  // Redirect if no user is logged in
+  if (!loading && !currentUser) {
+    return <Navigate to="/" />;
+  }
 
   const navigation = [
     { 
@@ -57,14 +52,11 @@ const AppLayout = () => {
       current: location.pathname === "/app/ai-chat",
       badge: "New" 
     },
-    { 
-      name: "Profile", 
-      href: "/app/profile", 
-      icon: User, 
-      current: location.pathname === "/app/profile",
-      badge: null 
-    },
   ];
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -101,12 +93,12 @@ const AppLayout = () => {
           <div className="px-4 mb-8">
             <div className="flex items-center mb-4">
               <Avatar className="h-10 w-10 border-2 border-primary/20">
-                <AvatarImage src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage src={currentUser?.photoURL || ""} />
+                <AvatarFallback>{currentUser?.displayName?.charAt(0) || "U"}</AvatarFallback>
               </Avatar>
               <div className="ml-3">
-                <p className="font-medium text-sm">John Doe</p>
-                <p className="text-xs text-muted-foreground">john@example.com</p>
+                <p className="font-medium text-sm">{currentUser?.displayName || "User"}</p>
+                <p className="text-xs text-muted-foreground">{currentUser?.email || ""}</p>
               </div>
             </div>
             
@@ -146,14 +138,14 @@ const AppLayout = () => {
               <HelpCircle className="h-4 w-4" />
               Help & Resources
             </Link>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2 text-sm rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
-              <Settings className="h-4 w-4" />
-              Settings
-            </Link>
-            <Link to="/" className="flex items-center gap-3 px-4 py-2 text-sm rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
+            <Button 
+              onClick={handleLogout}
+              variant="ghost" 
+              className="w-full flex items-center justify-start gap-3 px-4 py-2 text-sm rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+            >
               <LogOut className="h-4 w-4" />
               Logout
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -170,12 +162,12 @@ const AppLayout = () => {
           <div className="px-4 mb-8">
             <div className="flex items-center mb-4">
               <Avatar className="h-10 w-10 border-2 border-primary/20">
-                <AvatarImage src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage src={currentUser?.photoURL || ""} />
+                <AvatarFallback>{currentUser?.displayName?.charAt(0) || "U"}</AvatarFallback>
               </Avatar>
               <div className="ml-3">
-                <p className="font-medium text-sm">John Doe</p>
-                <p className="text-xs text-muted-foreground">john@example.com</p>
+                <p className="font-medium text-sm">{currentUser?.displayName || "User"}</p>
+                <p className="text-xs text-muted-foreground">{currentUser?.email || ""}</p>
               </div>
             </div>
             
@@ -234,29 +226,14 @@ const AppLayout = () => {
           </nav>
           
           <div className="mt-auto border-t border-sidebar-border pt-4 px-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start px-2">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                  <ChevronDown className="h-4 w-4 ml-auto" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Billing</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button 
+              onClick={handleLogout}
+              variant="ghost" 
+              className="w-full justify-start px-4 py-2 text-sm"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
           </div>
         </div>
       </div>
@@ -278,43 +255,15 @@ const AppLayout = () => {
                 <HelpCircle className="h-5 w-5" />
               </Button>
               
-              <div className="hidden md:block">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2 pl-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80" />
-                        <AvatarFallback>JD</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col items-start text-xs">
-                        <span className="font-medium">John Doe</span>
-                        <span className="text-muted-foreground">Free Plan</span>
-                      </div>
-                      <ChevronDown className="h-4 w-4 opacity-50" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        <User className="h-4 w-4 mr-2" />
-                        <span>Profile</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Settings className="h-4 w-4 mr-2" />
-                        <span>Settings</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <Link to="/">
-                      <DropdownMenuItem>
-                        <LogOut className="h-4 w-4 mr-2" />
-                        <span>Log out</span>
-                      </DropdownMenuItem>
-                    </Link>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              <div className="hidden md:flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={currentUser?.photoURL || ""} />
+                  <AvatarFallback>{currentUser?.displayName?.charAt(0) || "U"}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col items-start text-xs">
+                  <span className="font-medium">{currentUser?.displayName || "User"}</span>
+                  <span className="text-muted-foreground">Free Plan</span>
+                </div>
               </div>
             </div>
           </div>
