@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import HeroImage from "../components/landing/HeroImage";
 import FeatureCard from "../components/landing/FeatureCard";
 import { Motion } from "../components/ui/motion";
+import Navbar from "../components/landing/Navbar";
+import Testimonial from "../components/landing/Testimonial";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +47,9 @@ const Index = () => {
         <div className="blob w-[600px] h-[600px] bottom-0 right-0 animate-blob-move animation-delay-2000 opacity-30"></div>
         <div className="blob w-[300px] h-[300px] bottom-1/4 left-1/4 animate-blob-move animation-delay-4000 opacity-20"></div>
       </div>
+      
+      {/* Navbar */}
+      <Navbar />
       
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center px-4 pt-20 pb-32 md:pt-32 md:pb-40 text-center">
@@ -164,9 +169,52 @@ const Index = () => {
         </div>
       </section>
       
+      {/* Testimonials Section */}
+      <section className="py-24 px-4 bg-slate-50 dark:bg-slate-900/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <Motion
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">What Founders Say</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Join hundreds of founders who have launched their startups with Founder Flow AI.
+              </p>
+            </Motion>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <Testimonial 
+              quote="Founder Flow AI helped me validate my SaaS idea and create a pitch deck that landed me my first investor meeting."
+              author="Sarah Chen"
+              role="Founder, DataSync"
+              image="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=150&h=150"
+            />
+            <Testimonial 
+              quote="The AI co-founder was like having an experienced mentor available 24/7. It helped me refine my business model in ways I hadn't considered."
+              author="Marcus Johnson"
+              role="CEO, RetailAI"
+              image="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150"
+            />
+          </div>
+        </div>
+      </section>
+      
       {/* CTA Section */}
-      <section className="glass-card py-16 px-4 my-20 mx-4 md:mx-auto max-w-5xl">
-        <div className="text-center">
+      <section className="relative py-24 px-4 overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <img 
+            src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&q=80&w=2000"
+            alt="Startup workspace" 
+            className="w-full h-full object-cover opacity-20 dark:opacity-10"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background"></div>
+        </div>
+      
+        <div className="max-w-5xl mx-auto glass-card py-16 px-8 text-center relative z-10">
           <Motion
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -212,8 +260,15 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="glass-card p-6"
+            className="glass-card p-6 hover:shadow-lg transition-shadow"
           >
+            <div className="mb-4 overflow-hidden rounded-lg">
+              <img 
+                src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=600" 
+                alt="Startup idea" 
+                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
             <h3 className="text-xl font-semibold mb-2">What Makes a Great Startup Idea in 2025?</h3>
             <p className="text-muted-foreground mb-4">Learn the key characteristics of successful startup ideas in today's market.</p>
             <Link to="#" className="text-primary hover:underline inline-flex items-center">
@@ -226,8 +281,15 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="glass-card p-6"
+            className="glass-card p-6 hover:shadow-lg transition-shadow"
           >
+            <div className="mb-4 overflow-hidden rounded-lg">
+              <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600" 
+                alt="Pitch deck" 
+                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
             <h3 className="text-xl font-semibold mb-2">3 Slides Every Pitch Deck Must Have</h3>
             <p className="text-muted-foreground mb-4">Master the essential components that investors look for in winning pitch decks.</p>
             <Link to="#" className="text-primary hover:underline inline-flex items-center">
